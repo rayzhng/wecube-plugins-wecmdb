@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<package name="wecmdb" version="v0.1"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:noNamespaceSchemaLocation="plugin-config-v2.xsd">
+
+    <!-- 1.依赖分析 - 描述运行本插件包需要的其他插件包 -->
+
+    <!-- 2.菜单注入 - 描述运行本插件包需要注入的菜单 -->
+    <menus>
+        <menu code='DESIGNING_CI_DATA_ENQUIRY' cat='DATA_QUERY' displayName="CI Data Enquiry">/designing/ci-data-enquiry</menu>
+        <menu code='DESIGNING_CI_INTEGRATED_QUERY_EXECUTION' cat='DATA_QUERY' displayName="CI Integrated Enquiry">/designing/ci-integrated-query-execution</menu>
+        <menu code='DESIGNING_ENUM_ENQUIRY' cat='DATA_QUERY' displayName="Enum Enquiry">/designing/enum-enquiry</menu>
+
+        <menu code='DESIGNING_CI_DATA_MANAGEMENT' cat='DATA_MANAGEMENT' displayName="CI Data Management">/designing/ci-data-management</menu>
+        <menu code='DESIGNING_CI_INTEGRATED_QUERY_MANAGEMENT' cat='DATA_MANAGEMENT' displayName="CI Integrated Enquiry Management">/designing/ci-integrated-query-management</menu>
+        <menu code='DESIGNING_ENUM_MANAGEMENT' cat='DATA_MANAGEMENT' displayName="Enum Management">/designing/enum-management</menu>
+
+        <menu code='IDC_PLANNING_DESIGN' cat='VIEW_MANAGEMENT' displayName="IDC Planning Design">/view-management/idc-planning-design</menu>
+        <menu code='IDC_RESOURCE_PLANNING' cat='VIEW_MANAGEMENT' displayName="IDC Resource Plan">/view-management/idc-resource-planning</menu>
+        <menu code='APPLICATION_ARCHITECTURE_DESIGN' cat='VIEW_MANAGEMENT' displayName="App Architecture Design">/view-management/application-architecture-design</menu>
+        <menu code='APPLICATION_DEPLOYMENT_DESIGN' cat='VIEW_MANAGEMENT' displayName="APP Deploy Design">/view-management/application-deployment-design</menu>
+
+        <menu code='ADMIN_CMDB_MODEL_MANAGEMENT' cat='ADMIN' displayName="CMDB Model Management">/admin/cmdb-model-management</menu>
+        <menu code='ADMIN_PERMISSION_MANAGEMENT' cat='ADMIN' displayName="Permission Management">/admin/permission-management</menu>
+        <menu code='ADMIN_BASE_DATA_MANAGEMENT' cat='ADMIN' displayName="Base Data Management">/admin/base-data-management</menu>
+        <menu code='ADMIN_QUERY_LOG' cat='ADMIN' displayName="Log Enquiry">/admin/query-log</menu>
+        <menu code='ADMIN_USER_PASSWORD_MANAGEMENT' cat='ADMIN' displayName="User Password Management">/admin/user-password-management</menu>
+    </menus>
+
+    <!-- 3.数据模型 - 描述本插件包的数据模型,并且描述和Framework数据模型的关系 -->
+    <dataModel>
+        <entity name="system_design" displayName="系统设计" description="系统设计">
+            <attribute name="key_name" datatype="varchar" description="唯一名称"/>
+            <attribute name="state" datatype="int" description="状态"/>
+            <attribute name="fixed_date" datatype="varchar" description="确认日期"/>
+            <attribute name="description" datatype="varchar" description="描述说明"/>
+            <attribute name="code" datatype="varchar" description="编码"/>
+            <attribute name="name" datatype="varchar" description="名称"/>
+            <attribute name="business_group" datatype="int" description="业务群组"/>
+        </entity>
+        <entity name="subsys_design" displayName="子系统设计" description="子系统设计">
+            <attribute name="key_name" datatype="varchar" description="唯一名称"/>
+            <attribute name="state" datatype="int" description="状态"/>
+            <attribute name="fixed_date" datatype="varchar" description="确认日期"/>
+            <attribute name="description" datatype="varchar" description="描述说明"/>
+            <attribute name="code" datatype="varchar" description="编码"/>
+            <attribute name="name" datatype="varchar" description="名称"/>
+            <attribute name="business_group" datatype="int" description="业务群组"/>
+            <attribute name="system_design" datatype="varchar" description="系统设计"/>
+            <attribute name="dcn_design_type" datatype="int" description="DCN设计类型"/>
+        </entity>
+    </dataModel>
+
+    <!-- 4.系统参数 - 描述运行本插件包需要的系统参数 -->
+
+    <!-- 5.权限设定 -->
+    <authorities>
+        <authority systemRoleName="SUPER_ADMIN" >
+            <menu code="DESIGNING_CI_DATA_ENQUIRY" />
+            <menu code="DESIGNING_CI_INTEGRATED_QUERY_EXECUTION" />
+            <menu code="DESIGNING_ENUM_ENQUIRY" />
+            <menu code="DESIGNING_CI_DATA_MANAGEMENT" />
+            <menu code="DESIGNING_CI_INTEGRATED_QUERY_MANAGEMENT" />
+            <menu code="DESIGNING_ENUM_MANAGEMENT" />
+            <menu code="IDC_PLANNING_DESIGN" />
+            <menu code="IDC_RESOURCE_PLANNING" />
+            <menu code="APPLICATION_ARCHITECTURE_DESIGN" />
+            <menu code="APPLICATION_DEPLOYMENT_DESIGN" />
+            <menu code="ADMIN_CMDB_MODEL_MANAGEMENT" />
+            <menu code="ADMIN_PERMISSION_MANAGEMENT" />
+            <menu code="ADMIN_BASE_DATA_MANAGEMENT" />
+            <menu code="ADMIN_QUERY_LOG" />
+            <menu code="ADMIN_USER_PASSWORD_MANAGEMENT" />
+        </authority >
+    </authorities>
+
+    <!-- 6.运行资源 - 描述部署运行本插件包需要的基础资源(如主机、虚拟机、容器、数据库等) -->
+    <resourceDependencies>
+        <docker imageName="wecube-plugins-wecmdb" containerName="wecube-plugins-wecmdb" portBindings="22001:21001"/>
+    </resourceDependencies>
+
+    <!-- 7.插件列表 - 描述插件包中单个插件的输入和输出 -->
+    <plugins>
+        <plugin id="ci-data" name="CI Data">
+            <interface name="retrieve" path="/ci/retrieve" httpMethod='POST'>
+                <input-parameters>
+                    <parameter datatype="int" mappingType='context'  required='Y'>ciTypeId</parameter>
+                    <!--问题：模型数据查询，是否要支持过滤条件查询？如是，JSON格式是怎样定义的？-->
+                </input-parameters>
+                <output-parameters>
+                    <parameter datatype="string">status</parameter>
+                    <parameter datatype="string">message</parameter>
+                    <parameter datatype="string">data</parameter>
+                    <!--问题：模型数据查询返回的数据结构的JSON格式是怎样定义的？-->
+                </output-parameters>
+            </interface>
+            <interface name="confirm" path="/ci/confirm" httpMethod='POST'>
+                <input-parameters>
+                    <parameter datatype="int" mappingType='context'  required='Y'>ciTypeId</parameter>
+                    <parameter datatype="string" mappingType='context' required='Y'>guid</parameter>
+                </input-parameters>
+                <output-parameters>
+                    <parameter datatype="string">status</parameter>
+                    <parameter datatype="string">message</parameter>
+                    <parameter datatype="string">guid</parameter>
+                    <parameter datatype="string">fixed_date</parameter>
+                </output-parameters>
+            </interface>
+        </plugin>
+    </plugins>
+</package>
