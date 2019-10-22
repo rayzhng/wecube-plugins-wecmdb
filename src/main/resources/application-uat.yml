@@ -1,0 +1,10 @@
+server:
+  port: 8081
+  address: uat_server
+
+plugins:
+  wecmdb-server-url: http://uat_cmdb_server:9080/cmdb
+  
+logging:
+  level:
+    root: INFO
