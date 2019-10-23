@@ -19,6 +19,10 @@ WeCMDB插件是根据Wecube平台制定的插件开发规范，把WeCMDB需要�
 **定时同步动态模型**  
 根据业务需要，提供可配置的定时服务，提取WeCMDB的动态模型数据并同步至Wecube平台，为其需求方提供最新模型查询服务。
 
+## 部署图
+
+<img src="wiki/images/wecmdb_deploy_diagram.png"/>
+
 ## 版权声明
 WeCMDB插件是基于 Apache License 2.0 协议， 详情请参考
 [LICENSE](LICENSE)
