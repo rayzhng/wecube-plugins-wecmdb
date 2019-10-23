@@ -1,0 +1,10 @@
+server:
+  port: 8081
+  address: localhost
+
+plugins:
+  wecmdb-server-url: http://localhost:9080/cmdb
+  
+logging:
+  level:
+    root: INFO
