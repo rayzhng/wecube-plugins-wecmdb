@@ -15,20 +15,8 @@ target/
 *.classpath
 *.orig
 
-# dependencies
-*/node_modules/
-*/node/
-*/build
-*/package-lock.json
-*/build
-/.pnp
-.pnp.js
-
 # testing
 /coverage
-
-# production
-/build
 
 # misc
 .DS_Store
