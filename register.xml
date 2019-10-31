@@ -28,30 +28,13 @@
     </menus>
 
     <!-- 3.数据模型 - 描述本插件包的数据模型,并且描述和Framework数据模型的关系 -->
-    <dataModel>
-        <entity name="system_design" displayName="系统设计" description="系统设计">
-            <attribute name="key_name" datatype="varchar" description="唯一名称"/>
-            <attribute name="state" datatype="int" description="状态"/>
-            <attribute name="fixed_date" datatype="varchar" description="确认日期"/>
-            <attribute name="description" datatype="varchar" description="描述说明"/>
-            <attribute name="code" datatype="varchar" description="编码"/>
-            <attribute name="name" datatype="varchar" description="名称"/>
-            <attribute name="business_group" datatype="int" description="业务群组"/>
-        </entity>
-        <entity name="subsys_design" displayName="子系统设计" description="子系统设计">
-            <attribute name="key_name" datatype="varchar" description="唯一名称"/>
-            <attribute name="state" datatype="int" description="状态"/>
-            <attribute name="fixed_date" datatype="varchar" description="确认日期"/>
-            <attribute name="description" datatype="varchar" description="描述说明"/>
-            <attribute name="code" datatype="varchar" description="编码"/>
-            <attribute name="name" datatype="varchar" description="名称"/>
-            <attribute name="business_group" datatype="int" description="业务群组"/>
-            <attribute name="system_design" datatype="varchar" description="系统设计"/>
-            <attribute name="dcn_design_type" datatype="int" description="DCN设计类型"/>
-        </entity>
+    <dataModel isDynamic="true">
     </dataModel>
 
     <!-- 4.系统参数 - 描述运行本插件包需要的系统参数 -->
+    <systemParameters>
+        <systemParameter name="wecmdb-server-url" defaultValue='http://localhost:9080/wecmdb' scopeType="global"/>
+    </systemParameters>
 
     <!-- 5.权限设定 -->
     <authorities>
@@ -81,23 +64,10 @@
 
     <!-- 7.插件列表 - 描述插件包中单个插件的输入和输出 -->
     <plugins>
-        <plugin id="ci-data" name="CI Data">
-            <interface name="retrieve" path="/cis/{ci-type-id}/datas/{guid}" httpMethod='POST'>
+        <plugin id="ci-data-confirm" name="CI Data Confirmation">
+            <interface name="confirm" path="/entities/{entity-name}/data/{guid}/confirm" httpMethod='POST'>
                 <input-parameters>
-                    <parameter datatype="int" mappingType='context'  required='Y'>ci-type-id</parameter>
-                    <parameter datatype="string" mappingType='context' required='Y'>guid</parameter>
-                    <!--问题：模型数据查询，是否要支持过滤条件查询？如是，JSON格式是怎样定义的？-->
-                </input-parameters>
-                <output-parameters>
-                    <parameter datatype="string">status</parameter>
-                    <parameter datatype="string">message</parameter>
-                    <parameter datatype="string">data</parameter>
-                    <!--问题：模型数据查询返回的数据结构的JSON格式是怎样定义的？-->
-                </output-parameters>
-            </interface>
-            <interface name="confirm" path="/cis/{ci-type-id}/datas/{guid}/confirm" httpMethod='POST'>
-                <input-parameters>
-                    <parameter datatype="int" mappingType='context'  required='Y'>ciTypeId</parameter>
+                    <parameter datatype="String" mappingType='context'  required='Y'>entity-name</parameter>
                     <parameter datatype="string" mappingType='context' required='Y'>guid</parameter>
                 </input-parameters>
                 <output-parameters>

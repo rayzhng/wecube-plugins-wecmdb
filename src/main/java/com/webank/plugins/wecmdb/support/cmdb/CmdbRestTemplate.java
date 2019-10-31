@@ -44,8 +44,10 @@ public class CmdbRestTemplate {
     @SuppressWarnings("unchecked")
     public <D, R extends CmdbResponse> D postForResponse(String targetUrl, Object postObject, Class<R> responseType) {
         log.info("About to POST {} with postObject {}", targetUrl, postObject);
-        R cmdbResponse = restTemplate.postForObject(targetUrl, postObject, responseType);
-
+        HttpHeaders headers = new HttpHeaders();
+        headers.setAccept(Arrays.asList(MediaType.APPLICATION_JSON));
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        R cmdbResponse = restTemplate.postForObject(targetUrl, new HttpEntity<>(postObject, headers), responseType);
         log.info("CMDB response: {} ", cmdbResponse);
         validateCmdbResponse(cmdbResponse);
         return (D) cmdbResponse.getData();
