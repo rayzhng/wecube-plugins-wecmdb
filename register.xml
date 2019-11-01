@@ -65,9 +65,9 @@
     <!-- 7.插件列表 - 描述插件包中单个插件的输入和输出 -->
     <plugins>
         <plugin id="ci-data-confirm" name="CI Data Confirmation">
-            <interface name="confirm" path="/entities/{entity-name}/{guid}/confirm" httpMethod='POST'>
+            <interface name="confirm" path="/data/confirm" httpMethod='POST'>
                 <input-parameters>
-                    <parameter datatype="String" mappingType='context'  required='Y'>entity-name</parameter>
+                    <parameter datatype="string" mappingType='context' required='Y'>entityName</parameter>
                     <parameter datatype="string" mappingType='context' required='Y'>guid</parameter>
                 </input-parameters>
                 <output-parameters>

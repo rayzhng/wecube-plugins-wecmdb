@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -18,6 +19,7 @@ import com.webank.plugins.wecmdb.support.cmdb.dto.CiTypeAttrDto;
 import com.webank.plugins.wecmdb.support.cmdb.dto.CiTypeDto;
 import com.webank.plugins.wecmdb.support.cmdb.dto.CmdbDataType;
 import com.webank.plugins.wecmdb.support.cmdb.dto.CmdbInputType;
+import com.webank.plugins.wecmdb.support.cmdb.dto.CmdbOperateCiDto;
 import com.webank.plugins.wecmdb.support.cmdb.dto.CmdbResponse;
 import com.webank.plugins.wecmdb.support.cmdb.dto.CmdbResponse.DefaultCmdbResponse;
 import com.webank.plugins.wecmdb.support.cmdb.dto.CmdbResponses.CiDataQueryResultResponse;
@@ -71,10 +73,26 @@ public class CmdbServiceV2Stub {
         return query(CITYYP_ATTR_QUERY, queryObject, CiTypeAttrQueryResultResponse.class);
     }
 
-    public Object confirmCiData(String ciTypeTableName, String guid) {
-        List<OperateCiDto> operateCiDtos = new ArrayList<>();
-        operateCiDtos.add(new OperateCiDto(guid, retrieveCiTypeIdByTableName(ciTypeTableName)));
-        return template.postForResponse(asCmdbUrl(CIDATA_STATE_OPERATE), operateCiDtos, DefaultCmdbResponse.class);
+    public Object confirmBatchCiData(List<OperateCiDto> operateCiDtos) {
+        validate(operateCiDtos);
+        List<CmdbOperateCiDto> cmdbOperateCiDtos = new ArrayList<>();
+        operateCiDtos.forEach(operateCiDto -> {
+            cmdbOperateCiDtos.add(new CmdbOperateCiDto(operateCiDto.getGuid(), retrieveCiTypeIdByTableName(operateCiDto.getEntityName())));
+        });
+        return template.postForResponse(asCmdbUrl(CIDATA_STATE_OPERATE), cmdbOperateCiDtos, DefaultCmdbResponse.class);
+    }
+
+    private void validate(List<OperateCiDto> operateCiDtos) {
+        operateCiDtos.forEach(operateCiDto -> {
+            if (StringUtils.isBlank(operateCiDto.getGuid())) {
+                throw new PluginException("Field 'guid' is required for ci data confirmation.");
+            }
+
+            if (StringUtils.isBlank(operateCiDto.getEntityName())) {
+                throw new PluginException("Field 'entityName' is required for ci data confirmation.");
+            }
+        });
+
     }
 
     private String formatString(String path, Object... pathVariables) {
