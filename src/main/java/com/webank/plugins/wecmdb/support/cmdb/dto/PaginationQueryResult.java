@@ -1,4 +1,4 @@
-package com.webank.plugins.wecmdb.support.cmdb.dto.v2;
+package com.webank.plugins.wecmdb.support.cmdb.dto;
 
 
 import java.util.List;

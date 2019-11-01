@@ -174,10 +174,6 @@ public class HttpClientConfig {
         public void customize(RestTemplate restTemplate) {
             restTemplate.setRequestFactory(clientHttpRequestFactory());
             restTemplate.getInterceptors().add(new CustomClientHttpRequestInterceptor());
-            //TODO: please remove this custom converter when upstream system (eg.CMDB) refactor all stupid content-type 'text/json;charset=utf-8' to 'application/json'
-            MappingJackson2HttpMessageConverter textJsonConverter = new MappingJackson2HttpMessageConverter();
-            textJsonConverter.setSupportedMediaTypes(Arrays.asList(new MediaType("text", "*")));
-            restTemplate.getMessageConverters().add(textJsonConverter);
         }
     }
 

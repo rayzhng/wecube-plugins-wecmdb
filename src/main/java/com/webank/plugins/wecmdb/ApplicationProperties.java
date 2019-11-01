@@ -9,9 +9,18 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 @ConfigurationProperties(prefix = "plugins")
 public class ApplicationProperties {
 
+    private String packageName;
     private String wecmdbServerUrl;
     private Map<String, String> customHeaders = new LinkedHashMap<>();
     private Set<String> sensitiveHeaders = null;
+
+    public String getPackageName() {
+        return packageName;
+    }
+
+    public void setPackageName(String packageName) {
+        this.packageName = packageName;
+    }
 
     public String getWecmdbServerUrl() {
         return wecmdbServerUrl;

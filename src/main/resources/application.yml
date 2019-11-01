@@ -3,7 +3,8 @@ server:
   address: localhost
 
 plugins:
-  wecmdb-server-url: http://localhost:9080/cmdb
+  pacakge-name: wecmdb
+  wecmdb-server-url: http://localhost:9080/wecmdb
   
 logging:
   level:
