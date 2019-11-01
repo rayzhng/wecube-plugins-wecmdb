@@ -2,31 +2,18 @@ package com.webank.plugins.wecmdb.dto;
 
 public class OperateCiDto {
     private String guid;
-    private int ciTypeId;
-
-    public OperateCiDto() {
-        
-    }
-
-    public OperateCiDto(String guid, int ciTypeId) {
-        this.setGuid(guid);
-        this.setCiTypeId(ciTypeId);
-    }
-
+    private String entityName;
     public String getGuid() {
         return guid;
     }
-
     public void setGuid(String guid) {
         this.guid = guid;
     }
-
-    public int getCiTypeId() {
-        return ciTypeId;
+    public String getEntityName() {
+        return entityName;
     }
-
-    public void setCiTypeId(int ciTypeId) {
-        this.ciTypeId = ciTypeId;
+    public void setEntityName(String entityName) {
+        this.entityName = entityName;
     }
 
 }
