@@ -20,16 +20,16 @@ public class ApiController {
     @Autowired
     private CmdbServiceV2Stub cmdbServiceV2Stub;
 
-    @PostMapping("/cis/{ci-type-name}/datas/{guid}")
+    @PostMapping("/entities/{entity-name}/{guid}")
     @ResponseBody
-    public JsonResponse retrieveCiData(@PathVariable(value = "ci-type-name") String ciTypeName, @PathVariable(value = "guid") String guid) {
-        return okayWithData(cmdbServiceV2Stub.getCiDataByGuid(ciTypeName, guid));
+    public JsonResponse retrieveCiData(@PathVariable(value = "entity-name") String entityName, @PathVariable(value = "guid") String guid) {
+        return okayWithData(cmdbServiceV2Stub.getCiDataByGuid(entityName, guid));
     }
 
-    @PostMapping("/cis/{ci-type-name}/datas/{guid}/confirm")
+    @PostMapping("/entities/{entity-name}/{guid}/confirm")
     @ResponseBody
-    public JsonResponse implementCiType(@PathVariable(value = "ci-type-name") String ciTypeName, @PathVariable(value = "guid") String guid) {
-        return okayWithData(cmdbServiceV2Stub.confirmCi(ciTypeName, guid));
+    public JsonResponse confirmCiData(@PathVariable(value = "entity-name") String entityName, @PathVariable(value = "guid") String guid) {
+        return okayWithData(cmdbServiceV2Stub.confirmCiData(entityName, guid));
     }
     
     @GetMapping("/data-model")

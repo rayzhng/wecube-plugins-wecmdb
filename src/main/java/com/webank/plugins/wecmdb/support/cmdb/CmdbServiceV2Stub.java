@@ -71,7 +71,7 @@ public class CmdbServiceV2Stub {
         return query(CITYYP_ATTR_QUERY, queryObject, CiTypeAttrQueryResultResponse.class);
     }
 
-    public Object confirmCi(String ciTypeTableName, String guid) {
+    public Object confirmCiData(String ciTypeTableName, String guid) {
         List<OperateCiDto> operateCiDtos = new ArrayList<>();
         operateCiDtos.add(new OperateCiDto(guid, retrieveCiTypeIdByTableName(ciTypeTableName)));
         return template.postForResponse(asCmdbUrl(CIDATA_STATE_OPERATE), operateCiDtos, DefaultCmdbResponse.class);
