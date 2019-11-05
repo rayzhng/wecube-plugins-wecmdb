@@ -1,6 +1,8 @@
 server:
   port: 8081
   address: localhost
+  servlet:
+    context-path: /wecmdb
 
 plugins:
   pacakge-name: wecmdb
