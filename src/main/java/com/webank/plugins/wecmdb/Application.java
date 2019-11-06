@@ -17,7 +17,6 @@ public class Application extends AbstractAnnotationConfigDispatcherServletInitia
         SpringApplication.run(Application.class, args);
     }
 
-
     @Override
     protected Class<?>[] getRootConfigClasses() {
         return new Class[] { SpringAppConfig.class };
@@ -30,6 +29,6 @@ public class Application extends AbstractAnnotationConfigDispatcherServletInitia
 
     @Override
     protected String[] getServletMappings() {
-        return new String[] {"/" };
+        return new String[] { "/" };
     }
 }
