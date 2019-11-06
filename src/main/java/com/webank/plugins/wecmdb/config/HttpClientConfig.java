@@ -1,11 +1,10 @@
 package com.webank.plugins.wecmdb.config;
 
-
 import java.io.IOException;
 import java.security.KeyManagementException;
 import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.http.HeaderElement;
@@ -34,12 +33,10 @@ import org.springframework.boot.web.client.RestTemplateCustomizer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpRequest;
-import org.springframework.http.MediaType;
 import org.springframework.http.client.ClientHttpRequestExecution;
 import org.springframework.http.client.ClientHttpRequestInterceptor;
 import org.springframework.http.client.ClientHttpResponse;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
-import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.scheduling.TaskScheduler;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -47,15 +44,20 @@ import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
 import org.springframework.web.client.RestTemplate;
 
 import com.webank.plugins.wecmdb.HttpClientProperties;
+import com.webank.plugins.wecmdb.interceptor.ApiAccessInterceptor;
+import com.webank.plugins.wecmdb.interceptor.RestTemplateInterceptor;
 
 @Configuration
 @EnableScheduling
 public class HttpClientConfig {
 
     private static final Logger log = LoggerFactory.getLogger(HttpClientConfig.class);
-    
+
     @Autowired
     private HttpClientProperties httpClientProperties;
+
+    @Autowired
+    private RestTemplateInterceptor restTemplateInterceptor;
 
     @Bean
     public PoolingHttpClientConnectionManager poolingConnectionManager() {
@@ -74,7 +76,8 @@ public class HttpClientConfig {
         }
 
         Registry<ConnectionSocketFactory> socketFactoryRegistry = RegistryBuilder
-                .<ConnectionSocketFactory>create().register("https", sslsf)
+                .<ConnectionSocketFactory>create()
+                .register("https", sslsf)
                 .register("http", new PlainConnectionSocketFactory())
                 .build();
 
@@ -156,6 +159,7 @@ public class HttpClientConfig {
     @Bean
     public RestTemplate restTemplate() {
         RestTemplate template = restTemplateBuilder().build();
+        template.setInterceptors(Collections.singletonList(restTemplateInterceptor));
         return template;
     }
 

@@ -241,4 +241,28 @@ public class CiTypeAttrDto {
     public void setIsRefreshable(Boolean isRefreshable) {
         this.isRefreshable = isRefreshable;
     }
+
+    public Integer getCiTypeId() {
+        return ciTypeId;
+    }
+
+    public void setCiTypeId(Integer ciTypeId) {
+        this.ciTypeId = ciTypeId;
+    }
+
+    public String getAutoFillRule() {
+        return autoFillRule;
+    }
+
+    public void setAutoFillRule(String autoFillRule) {
+        this.autoFillRule = autoFillRule;
+    }
+
+    public String getFilterRule() {
+        return filterRule;
+    }
+
+    public void setFilterRule(String filterRule) {
+        this.filterRule = filterRule;
+    }
 }

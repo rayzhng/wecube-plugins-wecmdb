@@ -1,6 +1,7 @@
 package com.webank.plugins.wecmdb.support.cmdb;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -31,6 +32,7 @@ import com.webank.plugins.wecmdb.support.cmdb.dto.PaginationQueryResult;
 @Service
 public class CmdbServiceV2Stub {
 
+    private static final String GUID = "guid";
     private static final String CITYPE_QUERY = "/ciTypes/retrieve";
     private static final String CITYYP_ATTR_QUERY = "/ciTypeAttrs/retrieve";
     private static final String CIDATA_QUERY = "/ci/%d/retrieve";
@@ -51,7 +53,7 @@ public class CmdbServiceV2Stub {
     private ApplicationProperties applicationProperties;
 
     public List<Object> getCiDataByGuid(String ciTypeTableName, String guid) {
-        PaginationQueryResult<Object> ciDataResult = query(formatString(CIDATA_QUERY, retrieveCiTypeIdByTableName(ciTypeTableName)), PaginationQuery.defaultQueryObject().addEqualsFilter("guid", guid), CiDataQueryResultResponse.class);
+        PaginationQueryResult<Object> ciDataResult = query(formatString(CIDATA_QUERY, retrieveCiTypeIdByTableName(ciTypeTableName)), PaginationQuery.defaultQueryObject().addEqualsFilter(GUID, guid), CiDataQueryResultResponse.class);
         return ciDataResult.getContents();
     }
 
@@ -162,5 +164,104 @@ public class CmdbServiceV2Stub {
 
     private String mapToWecubeDataType(CiTypeAttrDto ciTypeAttrDto) {
         return dataTypeMapping.get(ciTypeAttrDto.getPropertyType());
+    }
+
+    public Object getCiDataWithConditions(String entityName, String filter, String sorting, String selectAttrs) {
+        PaginationQuery queryObject = PaginationQuery.defaultQueryObject();
+
+        applyFiltering(filter, queryObject);
+        applySorting(sorting, queryObject);
+        applySelectAttrs(selectAttrs, queryObject);
+
+        return convertCiData(queryObject, retrieveCiTypeIdByTableName(entityName));
+    }
+
+    private void applySelectAttrs(String selectAttrs, PaginationQuery queryObject) {
+        if (!StringUtils.isBlank(selectAttrs)) {
+            List<String> resultColumns = Arrays.asList(selectAttrs.split(","));
+            queryObject.setResultColumns(resultColumns);
+        }
+    }
+
+    private void applySorting(String sorting, PaginationQuery queryObject) {
+        if (!StringUtils.isBlank(sorting)) {
+            if (sorting.split(",").length != 2) {
+                throw new PluginException("The given parameter 'sorting' must be format 'key,asc/desc'");
+            }
+            String sortingAttr = sorting.split(",")[0];
+            String sortingValue = sorting.split(",")[1];
+            queryObject.setSorting(new PaginationQuery.Sorting(sortingValue.equals("asc") ? true : false, sortingAttr));
+        }
+    }
+
+    private void applyFiltering(String filter, PaginationQuery queryObject) {
+        if (!StringUtils.isBlank(filter)) {
+            if (filter.split(",").length != 2) {
+                throw new PluginException("The given parameter 'filter' must be format 'key,value'");
+            }
+
+            String filterAttr = filter.split(",")[0];
+            String filterValue = filter.split(",")[1];
+            if (filterAttr.equals("id")) {
+                filterAttr = GUID;
+            }
+            queryObject.addEqualsFilter(filterAttr, filterValue);
+        }
+    }
+
+    private List<Map<String, Object>> convertCiData(PaginationQuery queryObject, Integer ciTypeId) {
+        List<Map<String, Object>> convertedCiData = new ArrayList<>();
+
+        PaginationQueryResult<Map> ciDataResult = query(formatString(CIDATA_QUERY, ciTypeId), queryObject, CiDataQueryResultResponse.class);
+        List<CiTypeAttrDto> ciTypeAttrDtos = getCiTypeAttrs(ciTypeId);
+        if (ciDataResult != null && !ciDataResult.getContents().isEmpty()) {
+            List<Map> cis = ciDataResult.getContents();
+            cis.forEach(ci -> {
+                Map<String, Object> convertedMap = new HashMap<>();
+                Map<String, Object> originCiData = (Map) ci.get("data");
+
+                originCiData.forEach((key, value) -> {
+                    if (queryObject.getResultColumns() == null || queryObject.getResultColumns().contains(key)) {
+                        populateSelectedColumns(ciTypeAttrDtos, convertedMap, key, value);
+                    }
+                });
+                convertedCiData.add(convertedMap);
+            });
+        }
+        return convertedCiData;
+    }
+
+    private void populateSelectedColumns(List<CiTypeAttrDto> ciTypeAttrDtos, Map<String, Object> convertedMap, String key, Object value) {
+        ciTypeAttrDtos.forEach(attr -> {
+            if (attr.getPropertyName().equals(key)) {
+                if (value == null || (value instanceof String && "".equals(value))) {
+                    convertedMap.put(key, value);
+                } else if (CmdbInputType.fromCode(attr.getInputType()) == CmdbInputType.Droplist || CmdbInputType.fromCode(attr.getInputType()) == CmdbInputType.MultSelDroplist) {
+                    Map map = (Map) value;
+                    convertedMap.put(key, map.get("codeId"));
+                } else if (attr.getPropertyName().equals(key) && (CmdbInputType.fromCode(attr.getInputType()) == CmdbInputType.Reference)) {
+                    Map singleRefObject = (Map) value;
+                    convertedMap.put(key, value != null ? singleRefObject.get(GUID) : value);
+                } else if (attr.getPropertyName().equals(key) && (CmdbInputType.fromCode(attr.getInputType()) == CmdbInputType.MultRef)) {
+                    List multRefObjects = (List) value;
+                    List<String> guids = new ArrayList<>();
+                    multRefObjects.forEach(object -> {
+                        guids.add(((Map<String, Object>) object).get(GUID).toString());
+                    });
+                    convertedMap.put(key, String.join(",", guids.toArray(new String[guids.size()])));
+                } else {
+                    convertedMap.put(key, value);
+                }
+            }
+        });
+    }
+
+    private List<CiTypeAttrDto> getCiTypeAttrs(Integer ciTypeId) {
+        PaginationQueryResult<CiTypeAttrDto> ciTypeAttrResult = queryCiTypeAttrs(PaginationQuery.defaultQueryObject().addEqualsFilter("ciTypeId", ciTypeId));
+        if (ciTypeAttrResult != null && ciTypeAttrResult.getContents() != null && !ciTypeAttrResult.getContents().isEmpty()) {
+            return ciTypeAttrResult.getContents();
+        } else {
+            throw new PluginException(String.format("Can not find attrs for ciType [%s]", ciTypeId));
+        }
     }
 }
