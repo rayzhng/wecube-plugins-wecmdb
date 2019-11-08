@@ -4,4 +4,3 @@ ADD target/wecube-plugins-wecmdb-0.0.1-SNAPSHOT.jar /application/wecube-plugins-
 ADD build/start.sh /scripts/start.sh
 RUN chmod +x /scripts/start.sh
 CMD ["/bin/sh","-c","/scripts/start.sh $WECMDB_SERVER_URL"]
-
