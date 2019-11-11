@@ -26,18 +26,20 @@ public class HttpServletResponseWriter {
     }
 
     private void writeHeaders(HttpHeaders headers) {
-        if (headers == null || headers.isEmpty()) return;
+        if (headers == null || headers.isEmpty())
+            return;
         for (Map.Entry<String, List<String>> headerEntry : headers.entrySet()) {
             String headerName = headerEntry.getKey();
             List<String> headerValues = headerEntry.getValue();
-            if (headerValues!=null && !headerValues.isEmpty()) {
+            if (headerValues != null && !headerValues.isEmpty()) {
                 headerValues.forEach(headerValue -> response.addHeader(headerName, headerValue));
             }
         }
     }
 
     private void writeBody(byte[] body) {
-        if (body == null) return;
+        if (body == null)
+            return;
 
         ServletOutputStream outputStream = null;
         try {
@@ -51,8 +53,9 @@ public class HttpServletResponseWriter {
                 if (outputStream != null) {
                     outputStream.close();
                 }
-            } catch (Exception e) {}
+            } catch (Exception e) {
+            }
         }
     }
 
-} 
+}

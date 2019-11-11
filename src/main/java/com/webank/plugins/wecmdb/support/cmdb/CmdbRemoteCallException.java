@@ -6,7 +6,7 @@ import com.webank.plugins.wecmdb.support.cmdb.dto.CmdbResponse;
 public class CmdbRemoteCallException extends RemoteCallException {
 
     private static final long serialVersionUID = -8434149073950278847L;
-    
+
     private transient CmdbResponse cmdbResponse;
 
     public CmdbRemoteCallException(String message) {
