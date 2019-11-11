@@ -5,7 +5,7 @@ public class CmdbOperateCiDto {
     private int ciTypeId;
 
     public CmdbOperateCiDto() {
-        
+
     }
 
     public CmdbOperateCiDto(String guid, int ciTypeId) {

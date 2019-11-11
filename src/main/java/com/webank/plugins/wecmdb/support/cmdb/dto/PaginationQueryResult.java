@@ -1,6 +1,5 @@
 package com.webank.plugins.wecmdb.support.cmdb.dto;
 
-
 import java.util.List;
 
 public class PaginationQueryResult<DATATYPE> {
@@ -27,21 +26,27 @@ public class PaginationQueryResult<DATATYPE> {
         public int getStartIndex() {
             return startIndex;
         }
+
         public void setStartIndex(int startIndex) {
             this.startIndex = startIndex;
         }
+
         public int getPageSize() {
             return pageSize;
         }
+
         public void setPageSize(int pageSize) {
             this.pageSize = pageSize;
         }
+
         public int getTotalRows() {
             return totalRows;
         }
+
         public void setTotalRows(int totalRows) {
             this.totalRows = totalRows;
         }
+
         private int startIndex;
         private int pageSize;
         private int totalRows;

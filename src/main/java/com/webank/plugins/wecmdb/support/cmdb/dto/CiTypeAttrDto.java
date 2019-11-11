@@ -210,7 +210,6 @@ public class CiTypeAttrDto {
         this.isAccessControlled = isAccessControlled;
     }
 
-
     public CiTypeDto getCiType() {
         return ciType;
     }
@@ -218,6 +217,7 @@ public class CiTypeAttrDto {
     public void setCiType(CiTypeDto ciType) {
         this.ciType = ciType;
     }
+
     public Boolean getIsAuto() {
         return isAuto;
     }
@@ -225,7 +225,7 @@ public class CiTypeAttrDto {
     public void setIsAuto(Boolean isAuto) {
         this.isAuto = isAuto;
     }
-    
+
     public Boolean getIsDisplayed() {
         return isDisplayed;
     }

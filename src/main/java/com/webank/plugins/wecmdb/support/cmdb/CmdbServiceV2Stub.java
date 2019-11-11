@@ -1,7 +1,6 @@
 package com.webank.plugins.wecmdb.support.cmdb;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -32,6 +31,9 @@ import com.webank.plugins.wecmdb.support.cmdb.dto.PaginationQueryResult;
 @Service
 public class CmdbServiceV2Stub {
 
+    private static final String SORTING_DESC = "desc";
+    private static final String SORTING_ASC = "asc";
+    private static final String ID = "id";
     private static final String GUID = "guid";
     private static final String CITYPE_QUERY = "/ciTypes/retrieve";
     private static final String CITYYP_ATTR_QUERY = "/ciTypeAttrs/retrieve";
@@ -51,11 +53,6 @@ public class CmdbServiceV2Stub {
 
     @Autowired
     private ApplicationProperties applicationProperties;
-
-    public List<Object> getCiDataByGuid(String ciTypeTableName, String guid) {
-        PaginationQueryResult<Object> ciDataResult = query(formatString(CIDATA_QUERY, retrieveCiTypeIdByTableName(ciTypeTableName)), PaginationQuery.defaultQueryObject().addEqualsFilter(GUID, guid), CiDataQueryResultResponse.class);
-        return ciDataResult.getContents();
-    }
 
     private Integer retrieveCiTypeIdByTableName(String ciTypeTableName) {
         PaginationQuery queryObject = PaginationQuery.defaultQueryObject().addEqualsFilter("tableName", ciTypeTableName);
@@ -138,7 +135,7 @@ public class CmdbServiceV2Stub {
                         AttributeDto attributeDto = new AttributeDto();
                         attributeDto.setEntityName(ciTypeDto.getTableName());
                         attributeDto.setDescription(ciTypeAttrDto.getDescription());
-                        attributeDto.setName(ciTypeAttrDto.getPropertyName());
+                        attributeDto.setName(GUID.equals(ciTypeAttrDto.getPropertyName()) ? ID : ciTypeAttrDto.getPropertyName());
                         switch (CmdbInputType.fromCode(ciTypeAttrDto.getInputType())) {
                         case Reference:
                         case MultRef: {
@@ -178,7 +175,11 @@ public class CmdbServiceV2Stub {
 
     private void applySelectAttrs(String selectAttrs, PaginationQuery queryObject) {
         if (!StringUtils.isBlank(selectAttrs)) {
-            List<String> resultColumns = Arrays.asList(selectAttrs.split(","));
+            String[] attrs = selectAttrs.split(",");
+            List<String> resultColumns = new ArrayList<>();
+            for (String attr : attrs) {
+                resultColumns.add(ID.equals(attr) ? GUID : attr.trim());
+            }
             queryObject.setResultColumns(resultColumns);
         }
     }
@@ -186,11 +187,16 @@ public class CmdbServiceV2Stub {
     private void applySorting(String sorting, PaginationQuery queryObject) {
         if (!StringUtils.isBlank(sorting)) {
             if (sorting.split(",").length != 2) {
-                throw new PluginException("The given parameter 'sorting' must be format 'key,asc/desc'");
+                throw new PluginException("The given parameter 'sorting' must be format 'key," + SORTING_ASC + "/" + SORTING_DESC + "'");
             }
-            String sortingAttr = sorting.split(",")[0];
-            String sortingValue = sorting.split(",")[1];
-            queryObject.setSorting(new PaginationQuery.Sorting(sortingValue.equals("asc") ? true : false, sortingAttr));
+            String sortingAttr = sorting.split(",")[0].trim();
+            String sortingValue = sorting.split(",")[1].trim();
+
+            if (SORTING_ASC.equals(sortingValue) || SORTING_DESC.equals(sortingValue)) {
+                queryObject.setSorting(new PaginationQuery.Sorting(sortingValue.equals(SORTING_ASC) ? true : false, ID.equals(sortingAttr) ? GUID : sortingAttr));
+            } else {
+                throw new PluginException("The given value of 'sorting' must be " + SORTING_ASC + " or " + SORTING_DESC + "'");
+            }
         }
     }
 
@@ -200,12 +206,9 @@ public class CmdbServiceV2Stub {
                 throw new PluginException("The given parameter 'filter' must be format 'key,value'");
             }
 
-            String filterAttr = filter.split(",")[0];
-            String filterValue = filter.split(",")[1];
-            if (filterAttr.equals("id")) {
-                filterAttr = GUID;
-            }
-            queryObject.addEqualsFilter(filterAttr, filterValue);
+            String filterAttr = filter.split(",")[0].trim();
+            String filterValue = filter.split(",")[1].trim();
+            queryObject.addEqualsFilter(ID.equals(filterAttr) ? GUID : filterAttr, filterValue);
         }
     }
 
@@ -220,9 +223,9 @@ public class CmdbServiceV2Stub {
                 Map<String, Object> convertedMap = new HashMap<>();
                 Map<String, Object> originCiData = (Map) ci.get("data");
 
-                originCiData.forEach((key, value) -> {
-                    if (queryObject.getResultColumns() == null || queryObject.getResultColumns().contains(key)) {
-                        populateSelectedColumns(ciTypeAttrDtos, convertedMap, key, value);
+                originCiData.forEach((name, value) -> {
+                    if (queryObject.getResultColumns() == null || queryObject.getResultColumns().contains(name)) {
+                        populateSelectedAttrs(ciTypeAttrDtos, convertedMap, name, value);
                     }
                 });
                 convertedCiData.add(convertedMap);
@@ -231,26 +234,28 @@ public class CmdbServiceV2Stub {
         return convertedCiData;
     }
 
-    private void populateSelectedColumns(List<CiTypeAttrDto> ciTypeAttrDtos, Map<String, Object> convertedMap, String key, Object value) {
+    private void populateSelectedAttrs(List<CiTypeAttrDto> ciTypeAttrDtos, Map<String, Object> convertedMap, String dataAttrName, Object value) {
         ciTypeAttrDtos.forEach(attr -> {
-            if (attr.getPropertyName().equals(key)) {
+            String convertedAttrName = GUID.equals(attr.getPropertyName()) ? ID : attr.getPropertyName();
+            String convertedDataAttrName = GUID.equals(dataAttrName) ? ID : dataAttrName;
+            if (convertedAttrName.equals(convertedDataAttrName)) {
                 if (value == null || (value instanceof String && "".equals(value))) {
-                    convertedMap.put(key, value);
+                    convertedMap.put(convertedDataAttrName, value);
                 } else if (CmdbInputType.fromCode(attr.getInputType()) == CmdbInputType.Droplist || CmdbInputType.fromCode(attr.getInputType()) == CmdbInputType.MultSelDroplist) {
                     Map map = (Map) value;
-                    convertedMap.put(key, map.get("codeId"));
-                } else if (attr.getPropertyName().equals(key) && (CmdbInputType.fromCode(attr.getInputType()) == CmdbInputType.Reference)) {
+                    convertedMap.put(convertedDataAttrName, map.get("codeId"));
+                } else if (convertedAttrName.equals(dataAttrName) && (CmdbInputType.fromCode(attr.getInputType()) == CmdbInputType.Reference)) {
                     Map singleRefObject = (Map) value;
-                    convertedMap.put(key, value != null ? singleRefObject.get(GUID) : value);
-                } else if (attr.getPropertyName().equals(key) && (CmdbInputType.fromCode(attr.getInputType()) == CmdbInputType.MultRef)) {
+                    convertedMap.put(convertedDataAttrName, value != null ? singleRefObject.get(GUID) : value);
+                } else if (convertedAttrName.equals(convertedDataAttrName) && (CmdbInputType.fromCode(attr.getInputType()) == CmdbInputType.MultRef)) {
                     List multRefObjects = (List) value;
                     List<String> guids = new ArrayList<>();
                     multRefObjects.forEach(object -> {
                         guids.add(((Map<String, Object>) object).get(GUID).toString());
                     });
-                    convertedMap.put(key, String.join(",", guids.toArray(new String[guids.size()])));
+                    convertedMap.put(convertedDataAttrName, String.join(",", guids.toArray(new String[guids.size()])));
                 } else {
-                    convertedMap.put(key, value);
+                    convertedMap.put(convertedDataAttrName, value);
                 }
             }
         });

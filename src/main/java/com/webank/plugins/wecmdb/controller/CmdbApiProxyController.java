@@ -22,12 +22,11 @@ import org.springframework.web.client.RestTemplate;
 import com.webank.plugins.wecmdb.ApplicationProperties;
 import com.webank.plugins.wecmdb.service.helper.ProxyExchange;
 
-
 @RestController
 public class CmdbApiProxyController {
-    
+
     private static final Logger log = LoggerFactory.getLogger(CmdbApiProxyController.class);
-    
+
     private static final String API_PROXY_PATH = "/wecmdb";
 
     @Autowired
@@ -35,7 +34,7 @@ public class CmdbApiProxyController {
 
     @Autowired
     private ApplicationProperties applicationProperties;
-    
+
     @RequestMapping(value = API_PROXY_PATH + "/**", method = { GET, DELETE, OPTIONS, HEAD })
     public void pluginApiProxy(HttpServletRequest request, HttpServletResponse response) {
         proxy(createProxyExchange(request, response), request);
@@ -72,4 +71,4 @@ public class CmdbApiProxyController {
         return applicationProperties.getWecmdbServerUrl() + path;
     }
 
-} 
+}

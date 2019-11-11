@@ -9,11 +9,14 @@ public class CmdbResponse<DATATYPE> {
     private String statusMessage;
     private DATATYPE data;
 
-    public static class DefaultCmdbResponse extends CmdbResponse<Object> {}
+    public static class DefaultCmdbResponse extends CmdbResponse<Object> {
+    }
 
-    public static class IntegerCmdbResponse extends CmdbResponse<Integer> {}
+    public static class IntegerCmdbResponse extends CmdbResponse<Integer> {
+    }
 
-    public static class ListDataResponse extends CmdbResponse<List> {}
+    public static class ListDataResponse extends CmdbResponse<List> {
+    }
 
     public String getStatusCode() {
         return statusCode;

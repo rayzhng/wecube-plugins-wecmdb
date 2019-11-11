@@ -154,4 +154,4 @@ public class ProxyExchange {
             throw new IllegalStateException("Cannot create URI : " + uri, e);
         }
     }
-} 
+}

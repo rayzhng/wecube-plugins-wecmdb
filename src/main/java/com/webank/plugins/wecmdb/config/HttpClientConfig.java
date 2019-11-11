@@ -111,7 +111,8 @@ public class HttpClientConfig {
         RequestConfig requestConfig = RequestConfig.custom()
                 .setConnectionRequestTimeout(httpClientProperties.getRequestTimeout())
                 .setConnectTimeout(httpClientProperties.getConnectTimeout())
-                .setSocketTimeout(httpClientProperties.getSocketTimeout()).build();
+                .setSocketTimeout(httpClientProperties.getSocketTimeout())
+                .build();
 
         return HttpClients.custom()
                 .setDefaultRequestConfig(requestConfig)

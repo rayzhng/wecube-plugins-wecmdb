@@ -17,8 +17,9 @@ public class ApiAccessInterceptor implements HandlerInterceptor {
             response.setHeader("roleName", roleName);
             RoleStorage.getIntance().set(roleName);
         } else {
-            //TO DO: Hard code for testing only, will remove later on
-            //throw new PluginException("Required parameter 'roleName' is missing in header.");
+            // TO DO: Hard code for testing only, will remove later on
+            // throw new PluginException("Required parameter 'roleName' is missing in
+            // header.");
             response.setHeader("roleName", DEFAULT_SUPER_ADMIN);
             RoleStorage.getIntance().set(DEFAULT_SUPER_ADMIN);
         }
