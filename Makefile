@@ -35,8 +35,9 @@ package:
 	cd we-cmdb/cmdb-ui/dist && zip -r ui.zip .
 	cd package && cp ../we-cmdb/cmdb-ui/dist/ui.zip .
 	cd package && zip -r $(project_name)-$(version).zip .
-	docker stop minio-client
-	docker rm minio-client
-	docker run --name minio-client -v `pwd`/package:/package -itd --entrypoint=/bin/sh minio/mc
-	docker exec minio-client mc config host add wecubeS3 $(s3_server_url) $(s3_access_key) $(s3_secret_key) wecubeS3
-	docker exec minio-client mc cp /package/$(project_name)-$(version).zip wecubeS3/wecube-plugin-package-bucket
+	docker stop minio-client-plugins-wecmdb
+	docker rm minio-client-plugins-wecmdb
+	docker run --name minio-client-plugins-wecmdb -v `pwd`/package:/package -itd --entrypoint=/bin/sh minio/mc
+	docker exec minio-client-plugins-wecmdb mc config host add wecubeS3 $(s3_server_url) $(s3_access_key) $(s3_secret_key) wecubeS3
+	docker exec minio-client-plugins-wecmdb mc cp /package/$(project_name)-$(version).zip wecubeS3/wecube-plugin-package-bucket
+	docker rmi $(project_name):$(version)
