@@ -9,23 +9,19 @@ clean:
 	rm -rf $(current_dir)/target
 
 .PHONY:build
-build:
+build: clean
 	mkdir -p repository
 	docker run --rm --name wecube-plugins-wecmdb-build -v /data/repository:/usr/src/mymaven/repository   -v $(current_dir)/build/maven_settings.xml:/usr/share/maven/ref/settings-docker.xml  -v $(current_dir):/usr/src/mymaven -w /usr/src/mymaven maven:3.3-jdk-8 mvn -U clean install -Dmaven.test.skip=true -s /usr/share/maven/ref/settings-docker.xml dependency:resolve
 
-image: 
+image: build
 	docker build -t $(project_name):$(version) .
-
-push:
-	docker tag  $(project_name):$(version) $(remote_docker_image_registry):$(date)-$(version)
-	docker push $(remote_docker_image_registry):$(date)-$(version)
 
 s3_server_url=http://10.10.10.1:9000
 s3_access_key=access_key
 s3_secret_key=secret_key
 
 .PHONY:package
-package:
+package: image
 	rm -rf package
 	mkdir -p package
 	cd package && docker save $(project_name):$(version) -o image.tar
