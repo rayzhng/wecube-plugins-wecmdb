@@ -23,10 +23,8 @@
         <menu code='APPLICATION_DEPLOYMENT_DESIGN' cat='DESIGNING' displayName="APP Deploy Design">/wecmdb/view-management/application-deployment-design</menu>
 
         <menu code='ADMIN_CMDB_MODEL_MANAGEMENT' cat='ADMIN' displayName="CMDB Model Management">/wecmdb/admin/cmdb-model-management</menu>
-        <menu code='ADMIN_PERMISSION_MANAGEMENT' cat='ADMIN' displayName="Permission Management">/wecmdb/admin/permission-management</menu>
         <menu code='CMDB_ADMIN_BASE_DATA_MANAGEMENT' cat='ADMIN' displayName="Base Data Management">/wecmdb/admin/base-data-management</menu>
         <menu code='ADMIN_QUERY_LOG' cat='ADMIN' displayName="Log Enquiry">/wecmdb/admin/query-log</menu>
-        <menu code='ADMIN_USER_PASSWORD_MANAGEMENT' cat='ADMIN' displayName="User Password Management">/wecmdb/admin/user-password-management</menu>
     </menus>
 
     <!-- 3.数据模型 - 描述本插件包的数据模型,并且描述和Framework数据模型的关系 -->
