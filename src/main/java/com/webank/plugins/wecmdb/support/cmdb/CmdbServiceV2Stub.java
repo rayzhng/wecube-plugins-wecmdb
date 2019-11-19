@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,6 +39,9 @@ public class CmdbServiceV2Stub {
     private static final String CITYPE_QUERY = "/ciTypes/retrieve";
     private static final String CITYYP_ATTR_QUERY = "/ciTypeAttrs/retrieve";
     private static final String CIDATA_QUERY = "/ci/%d/retrieve";
+    private static final String CIDATA_CREATE = "/ci/%d/create";
+    private static final String CIDATA_UPDATE = "/ci/%d/update";
+    private static final String CIDATA_DELETE = "/ci/%d/delete";
     private static final String CIDATA_STATE_OPERATE = "/ci/state/operate?operation=confirm";
     private static final String API_VERSION = "/api/v2";
     private static final Map<String, String> dataTypeMapping = new HashMap<>();
@@ -268,5 +272,42 @@ public class CmdbServiceV2Stub {
         } else {
             throw new PluginException(String.format("Can not find attrs for ciType [%s]", ciTypeId));
         }
+    }
+
+    private List<Map> createCiData(Integer ciTypeId, Object[] ciDatas) {
+        return create(formatString(CIDATA_CREATE, ciTypeId), ciDatas, DefaultCmdbResponse.class);
+    }
+
+    private <D, R extends CmdbResponse> D create(String url, Object[] createObject, Class<R> responseType) {
+        return template.postForResponse(asCmdbUrl(url), createObject, responseType);
+    }
+
+    private Object deleteCiData(Integer ciTypeId, Object[] ids) {
+        return delete(formatString(CIDATA_DELETE, ciTypeId), ids, DefaultCmdbResponse.class);
+    }
+
+    private <D, R extends CmdbResponse> D delete(String url, Object[] ids, Class<R> responseType) {
+        return template.postForResponse(asCmdbUrl(url), ids, responseType);
+    }
+
+    private <D, R extends CmdbResponse> D update(String url, Object[] updateObject, Class<R> responseType) {
+        return template.postForResponse(asCmdbUrl(url), updateObject, responseType);
+    }
+
+    public List<Map<String, Object>> createCiData(String entityName, List<Map<String, Object>> request) {
+        List<Map> createdCiData = createCiData(retrieveCiTypeIdByTableName(entityName), request.toArray());
+        PaginationQuery queryObject = PaginationQuery.defaultQueryObject().addInFilter("guid", createdCiData.stream().map(item -> item.get("guid")).collect(Collectors.toList()));
+        return convertCiData(queryObject, retrieveCiTypeIdByTableName(entityName));
+    }
+
+    public List<Map<String, Object>> updateCiData(String entityName, List<Map<String, Object>> request) {
+        List<Map> updatedCiData = update(formatString(CIDATA_UPDATE, retrieveCiTypeIdByTableName(entityName)), request.toArray(), DefaultCmdbResponse.class);
+        PaginationQuery queryObject = PaginationQuery.defaultQueryObject().addInFilter("guid", updatedCiData.stream().map(item -> item.get("guid")).collect(Collectors.toList()));
+        return convertCiData(queryObject, retrieveCiTypeIdByTableName(entityName));
+    }
+
+    public void deleteCiData(String entityName, List<Map<String, Object>> request) {
+        Object[] ids = request.stream().map(item -> item.get("id")).collect(Collectors.toList()).toArray();
+        delete(formatString(CIDATA_DELETE, retrieveCiTypeIdByTableName(entityName)), ids, DefaultCmdbResponse.class);
     }
 }

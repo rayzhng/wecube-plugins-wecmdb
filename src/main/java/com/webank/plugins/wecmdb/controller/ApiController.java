@@ -1,8 +1,10 @@
 package com.webank.plugins.wecmdb.controller;
 
+import static com.webank.plugins.wecmdb.dto.JsonResponse.okay;
 import static com.webank.plugins.wecmdb.dto.JsonResponse.okayWithData;
 
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -30,6 +32,22 @@ public class ApiController {
             @RequestParam(value = "sorting", required = false) String sorting,
             @RequestParam(value = "select", required = false) String select) {
         return okayWithData(cmdbServiceV2Stub.getCiDataWithConditions(entityName, filter, sorting, select));
+    }
+
+    @PostMapping("/entities/{entity-name}/create")
+    public JsonResponse createCiData(@PathVariable("entity-name") String entityName, @RequestBody List<Map<String, Object>> request) {
+        return okayWithData(cmdbServiceV2Stub.createCiData(entityName, request));
+    }
+
+    @PostMapping("/entities/{entity-name}/update")
+    public JsonResponse updateCiData(@PathVariable("entity-name") String entityName, @RequestBody List<Map<String, Object>> request) {
+        return okayWithData(cmdbServiceV2Stub.updateCiData(entityName, request));
+    }
+
+    @PostMapping("/entities/{entity-name}/delete")
+    public JsonResponse deleteCiData(@PathVariable("entity-name") String entityName, @RequestBody List<Map<String, Object>> request) {
+        cmdbServiceV2Stub.deleteCiData(entityName, request);
+        return okay();
     }
 
     @PostMapping("/data/confirm")

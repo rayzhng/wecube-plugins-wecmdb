@@ -15,8 +15,8 @@ public class RestTemplateInterceptor implements ClientHttpRequestInterceptor {
     public ClientHttpResponse intercept(HttpRequest request, byte[] body, ClientHttpRequestExecution execution)
             throws IOException {
         HttpHeaders headers = request.getHeaders();
-        String roleName = RoleStorage.getIntance().get();
-        headers.add("roleName", roleName);
+        String username = UsernameStorage.getIntance().get();
+        headers.add("username", username);
         return execution.execute(request, body);
     }
 }
