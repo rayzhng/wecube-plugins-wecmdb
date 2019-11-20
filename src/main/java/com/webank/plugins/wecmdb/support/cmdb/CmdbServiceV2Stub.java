@@ -145,7 +145,7 @@ public class CmdbServiceV2Stub {
                         case MultRef: {
                             attributeDto.setDataType(DataType.Ref.getCode());
                             attributeDto.setRefPackageName(applicationProperties.getPackageName());
-                            attributeDto.setRefEntityName(ciTypeDto.getTableName());
+                            attributeDto.setRefEntityName(getCiTypeNameById(ciTypeAttrDto.getReferenceId()));
                             attributeDto.setRefAttributeName(ciTypeAttrDto.getPropertyName());
                             break;
                         }
@@ -161,6 +161,16 @@ public class CmdbServiceV2Stub {
             });
         }
         return entityDtos;
+    }
+
+    private String getCiTypeNameById(Integer ciTypeId) {
+        PaginationQuery queryObject = PaginationQuery.defaultQueryObject().addEqualsFilter("ciTypeId", ciTypeId);
+        PaginationQueryResult<CiTypeDto> ciTypes = queryCiTypes(queryObject);
+        if (ciTypes != null && ciTypes.getContents() != null && !ciTypes.getContents().isEmpty()) {
+            return ciTypes.getContents().get(0).getTableName();
+        } else {
+            throw new PluginException(String.format("Can not retrieve ciType with id [%s]", ciTypeId));
+        }
     }
 
     private String mapToWecubeDataType(CiTypeAttrDto ciTypeAttrDto) {
@@ -300,10 +310,23 @@ public class CmdbServiceV2Stub {
         return convertCiData(queryObject, retrieveCiTypeIdByTableName(entityName));
     }
 
-    public List<Map<String, Object>> updateCiData(String entityName, List<Map<String, Object>> request) {
-        List<Map> updatedCiData = update(formatString(CIDATA_UPDATE, retrieveCiTypeIdByTableName(entityName)), request.toArray(), DefaultCmdbResponse.class);
+    public List<Map<String, Object>> updateCiData(String entityName, List<Map<String, Object>> originRequest) {
+        List<Map<String, Object>> convertedRequest = convertedRequest(originRequest);
+        List<Map> updatedCiData = update(formatString(CIDATA_UPDATE, retrieveCiTypeIdByTableName(entityName)), convertedRequest.toArray(), DefaultCmdbResponse.class);
         PaginationQuery queryObject = PaginationQuery.defaultQueryObject().addInFilter("guid", updatedCiData.stream().map(item -> item.get("guid")).collect(Collectors.toList()));
         return convertCiData(queryObject, retrieveCiTypeIdByTableName(entityName));
+    }
+
+    private List<Map<String, Object>> convertedRequest(List<Map<String, Object>> originRequest) {
+        List<Map<String, Object>> convertedRequest = new ArrayList<>();
+        originRequest.forEach(origin -> {
+            Map<String, Object> convertedMap = new HashMap<>();
+            origin.forEach((name, value) -> {
+                convertedMap.put(ID.equals(name) ? GUID : name, value);
+            });
+            convertedRequest.add(convertedMap);
+        });
+        return convertedRequest;
     }
 
     public void deleteCiData(String entityName, List<Map<String, Object>> request) {

@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<package name="wecmdb" version="v0.1"
+<package name="wecmdb" version="{{VERSION}}"
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:noNamespaceSchemaLocation="plugin-config-v2.xsd">
 
@@ -58,7 +58,7 @@
 
     <!-- 6.运行资源 - 描述部署运行本插件包需要的基础资源(如主机、虚拟机、容器、数据库等) -->
     <resourceDependencies>
-        <docker imageName="wecmdb:v0.1" containerName="wecube-plugins-wecmdb" portBindings="{{host_port}}:8081" envVariables="WECMDB_SERVER_URL=http://111.230.161.237:8080/wecmdb"/>
+        <docker imageName="{{REPOSITORY}}:{{VERSION}}" containerName="wecube-plugins-wecmdb" portBindings="{{host_port}}:8081" envVariables="WECMDB_SERVER_URL={{WECMDB_SERVER_URL}}"/>
     </resourceDependencies>
 
     <!-- 7.插件列表 - 描述插件包中单个插件的输入和输出 -->
