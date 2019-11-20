@@ -27,9 +27,9 @@ package: image
 	mkdir -p package
 	cd package && docker save $(project_name):$(version) -o image.tar
 	cd package && cp ../register.xml .
-	cd package && sed -i "s~{{REPOSITORY}}~$project_name~g" register.xml
-	cd package && sed -i "s~{{VERSION}}~$version~g" register.xml
-	cd package && sed -i "s~{{WECMDB_SERVER_URL}}~$wecmdb_server_url~g" register.xml
+	cd package && sed -i "s~{{REPOSITORY}}~$(project_name)~g" register.xml
+	cd package && sed -i "s~{{VERSION}}~$(version)~g" register.xml
+	cd package && sed -i "s~{{WECMDB_SERVER_URL}}~$(wecmdb_server_url)~g" register.xml
 	cd we-cmdb && git checkout master && git pull
 	cd we-cmdb && make build-plugin-ui
 	cd we-cmdb/cmdb-ui/dist && zip -r ui.zip .
