@@ -146,7 +146,7 @@ public class CmdbServiceV2Stub {
                             attributeDto.setDataType(DataType.Ref.getCode());
                             attributeDto.setRefPackageName(applicationProperties.getPackageName());
                             attributeDto.setRefEntityName(getCiTypeNameById(ciTypeAttrDto.getReferenceId()));
-                            attributeDto.setRefAttributeName(ciTypeAttrDto.getPropertyName());
+                            attributeDto.setRefAttributeName(ID);
                             break;
                         }
                         default:
