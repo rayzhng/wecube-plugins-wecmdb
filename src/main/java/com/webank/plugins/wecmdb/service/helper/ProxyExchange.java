@@ -15,6 +15,7 @@ import java.util.Set;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.lang.StringUtils;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.RequestEntity;
@@ -40,8 +41,15 @@ public class ProxyExchange {
         this.request = request;
         this.response = response;
 
-        this.proxyUri = toURI(request.getRequestURL().toString());
+        this.proxyUri = toURI(request.getRequestURL().toString() + getQueryString(request));
         this.httpHeaders = readRequestHeaders(request);
+    }
+
+    private String getQueryString(HttpServletRequest request2) {
+        if (StringUtils.isNotBlank(request.getQueryString())) {
+            return "?" + request.getQueryString();
+        }
+        return "";
     }
 
     public ProxyExchange body(Object body) {
@@ -76,7 +84,7 @@ public class ProxyExchange {
     }
 
     public String path(String prefix) {
-        String path = this.path();
+        String path = this.path() + getQueryString(this.request);
         if (!path.startsWith(prefix)) {
             throw new IllegalArgumentException("Path does not start with prefix (" + prefix + "): " + path);
         } else {
