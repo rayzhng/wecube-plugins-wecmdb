@@ -257,7 +257,7 @@ public class CmdbServiceV2Stub {
                     convertedMap.put(convertedDataAttrName, value);
                 } else if (CmdbInputType.fromCode(attr.getInputType()) == CmdbInputType.Droplist || CmdbInputType.fromCode(attr.getInputType()) == CmdbInputType.MultSelDroplist) {
                     Map map = (Map) value;
-                    convertedMap.put(convertedDataAttrName, map.get("codeId"));
+                    convertedMap.put(convertedDataAttrName, map.get("code"));
                 } else if (convertedAttrName.equals(dataAttrName) && (CmdbInputType.fromCode(attr.getInputType()) == CmdbInputType.Reference)) {
                     Map singleRefObject = (Map) value;
                     convertedMap.put(convertedDataAttrName, value != null ? singleRefObject.get(GUID) : value);
