@@ -4,6 +4,10 @@ server:
   servlet:
     context-path: /wecmdb
 
+spring:
+  profiles:
+    active: dev
+
 plugins:
   pacakge-name: wecmdb
   wecmdb-server-url: http://localhost:9080/wecmdb

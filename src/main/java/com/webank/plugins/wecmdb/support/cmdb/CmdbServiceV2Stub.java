@@ -80,19 +80,20 @@ public class CmdbServiceV2Stub {
         validate(operateCiDtos);
         List<CmdbOperateCiDto> cmdbOperateCiDtos = new ArrayList<>();
         operateCiDtos.forEach(operateCiDto -> {
-            cmdbOperateCiDtos.add(new CmdbOperateCiDto(operateCiDto.getGuid(), retrieveCiTypeIdByTableName(operateCiDto.getEntityName())));
+            cmdbOperateCiDtos.add(new CmdbOperateCiDto(operateCiDto.getGuid(), extractCiTypeIdFromGuid(operateCiDto.getGuid())));
         });
         return template.postForResponse(asCmdbUrl(CIDATA_STATE_OPERATE), cmdbOperateCiDtos, DefaultCmdbResponse.class);
+    }
+
+    private int extractCiTypeIdFromGuid(String guid) {
+        String ciTypeId = guid.split("_")[0].replaceAll("^(0+)", "");
+        return Integer.valueOf(ciTypeId).intValue();
     }
 
     private void validate(List<OperateCiDto> operateCiDtos) {
         operateCiDtos.forEach(operateCiDto -> {
             if (StringUtils.isBlank(operateCiDto.getGuid())) {
                 throw new PluginException("Field 'guid' is required for ci data confirmation.");
-            }
-
-            if (StringUtils.isBlank(operateCiDto.getEntityName())) {
-                throw new PluginException("Field 'entityName' is required for ci data confirmation.");
             }
         });
 
@@ -255,19 +256,18 @@ public class CmdbServiceV2Stub {
             if (convertedAttrName.equals(convertedDataAttrName)) {
                 if (value == null || (value instanceof String && "".equals(value))) {
                     convertedMap.put(convertedDataAttrName, value);
-                } else if (CmdbInputType.fromCode(attr.getInputType()) == CmdbInputType.Droplist || CmdbInputType.fromCode(attr.getInputType()) == CmdbInputType.MultSelDroplist) {
-                    Map map = (Map) value;
-                    convertedMap.put(convertedDataAttrName, map.get("code"));
+                } else if (CmdbInputType.fromCode(attr.getInputType()) == CmdbInputType.Droplist) {
+                    Map singleSelect = (Map) value;
+                    convertedMap.put(convertedDataAttrName, singleSelect.get("code"));
+                } else if (CmdbInputType.fromCode(attr.getInputType()) == CmdbInputType.MultSelDroplist) {
+                    List<Map> multiSelect = (List) value;
+                    convertedMap.put(convertedDataAttrName, multiSelect.stream().map(item -> item.get("code")).collect(Collectors.toList()));
                 } else if (convertedAttrName.equals(dataAttrName) && (CmdbInputType.fromCode(attr.getInputType()) == CmdbInputType.Reference)) {
                     Map singleRefObject = (Map) value;
                     convertedMap.put(convertedDataAttrName, value != null ? singleRefObject.get(GUID) : value);
                 } else if (convertedAttrName.equals(convertedDataAttrName) && (CmdbInputType.fromCode(attr.getInputType()) == CmdbInputType.MultRef)) {
-                    List multRefObjects = (List) value;
-                    List<String> guids = new ArrayList<>();
-                    multRefObjects.forEach(object -> {
-                        guids.add(((Map<String, Object>) object).get(GUID).toString());
-                    });
-                    convertedMap.put(convertedDataAttrName, String.join(",", guids.toArray(new String[guids.size()])));
+                    List<Map> multRefObjects = (List) value;
+                    convertedMap.put(convertedDataAttrName, multRefObjects.stream().map(item -> item.get("GUID")).collect(Collectors.toList()));
                 } else {
                     convertedMap.put(convertedDataAttrName, value);
                 }
