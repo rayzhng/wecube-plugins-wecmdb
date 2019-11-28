@@ -29,4 +29,8 @@ public class CmdbOperateCiDto {
         this.ciTypeId = ciTypeId;
     }
 
+    @Override
+    public String toString() {
+        return "CmdbOperateCiDto [guid=" + guid + ", ciTypeId=" + ciTypeId + "]";
+    }
 }
