@@ -58,7 +58,7 @@
 
     <!-- 6.运行资源 - 描述部署运行本插件包需要的基础资源(如主机、虚拟机、容器、数据库等) -->
     <resourceDependencies>
-        <docker imageName="{{REPOSITORY}}:{{VERSION}}" containerName="wecube-plugins-wecmdb" portBindings="{{host_port}}:8081" envVariables="WECMDB_SERVER_URL={{WECMDB_SERVER_URL}}"/>
+        <docker imageName="{{REPOSITORY}}:{{VERSION}}" containerName="wecube-plugins-wecmdb" portBindings="{{ALLOCATE_PORT}}:8081" envVariables="WECMDB_SERVER_URL={{CMDB_URL}}"/>
     </resourceDependencies>
 
     <!-- 7.插件列表 - 描述插件包中单个插件的输入和输出 -->
@@ -66,7 +66,6 @@
         <plugin id="ci-data-confirm" name="CI Data Confirmation">
             <interface action="confirm" path="/data/confirm" httpMethod='POST'>
                 <inputParameters>
-                    <parameter datatype="string" mappingType='context' required='Y'>entityName</parameter>
                     <parameter datatype="string" mappingType='context' required='Y'>guid</parameter>
                 </inputParameters>
                 <outputParameters>
