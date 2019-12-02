@@ -11,4 +11,8 @@ public class OperateCiDto {
         this.guid = guid;
     }
 
+    @Override
+    public String toString() {
+        return "OperateCiDto [guid=" + guid + "]";
+    }
 }
