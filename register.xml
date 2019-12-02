@@ -66,7 +66,6 @@
         <plugin id="ci-data-confirm" name="CI Data Confirmation">
             <interface action="confirm" path="/data/confirm" httpMethod='POST'>
                 <inputParameters>
-                    <parameter datatype="string" mappingType='context' required='Y'>entityName</parameter>
                     <parameter datatype="string" mappingType='context' required='Y'>guid</parameter>
                 </inputParameters>
                 <outputParameters>
