@@ -61,7 +61,7 @@ public class ApiController {
         try {
             response = OperateCiJsonResponse.okayWithData(cmdbServiceV2Stub.confirmBatchCiData(operateCiDtos));
         } catch (Exception e) {
-            throw new OperationCiException(e.getMessage(), e);
+            throw new OperationCiException(String.format("Failed to confirm CI with request[%s], error [%s] ",inputs, e.getMessage()), e);
         }
 
         return response;

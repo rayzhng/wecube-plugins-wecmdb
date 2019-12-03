@@ -12,4 +12,9 @@ public class OperateCiDtoInputs {
     public void setInputs(List<OperateCiDto> inputs) {
         this.inputs = inputs;
     }
+
+    @Override
+    public String toString() {
+        return "OperateCiDtoInputs [inputs=" + inputs + "]";
+    }
 }
