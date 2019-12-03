@@ -1,62 +1,66 @@
 package com.webank.plugins.wecmdb.dto;
 
+import java.util.List;
+
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class OperateCiJsonResponse{
-    public final static String STATUS_OK = "OK";
-    public final static String STATUS_ERROR = "ERROR";
+    public final static String STATUS_OK = "0";
+    public final static String STATUS_ERROR = "1";
 
     @JsonProperty(value = "result_code")
-    private String status;
+    private String resultCode;
     @JsonProperty(value = "result_message")
-    private String message;
+    private String resultMessage;
     @JsonProperty(value = "results")
-    private Object data;
+    private OperateCiDtoOutputs results;
 
-    public String getStatus() {
-        return status;
+    public String getResultCode() {
+        return resultCode;
     }
 
-    public void setStatus(String status) {
-        this.status = status;
+    public void setResultCode(String resultCode) {
+        this.resultCode = resultCode;
     }
 
-    public String getMessage() {
-        return message;
+    public String getResultMessage() {
+        return resultMessage;
     }
 
-    public void setMessage(String message) {
-        this.message = message;
+    public void setResultMessage(String resultMessage) {
+        this.resultMessage = resultMessage;
     }
 
-    public Object getData() {
-        return data;
+    public Object getResults() {
+        return results;
     }
 
-    public void setData(Object data) {
-        this.data = data;
+    public void setResults(List<Object> data) {
+        OperateCiDtoOutputs outputs = new OperateCiDtoOutputs();
+        outputs.setOutputs(data);
+        this.results = outputs;
     }
 
-    public OperateCiJsonResponse withData(Object data) {
-        this.data = data;
+    public OperateCiJsonResponse withData(List<Object> data) {
+        setResults(data);
         return this;
     }
 
     public static OperateCiJsonResponse okay() {
         OperateCiJsonResponse result = new OperateCiJsonResponse();
-        result.setStatus(STATUS_OK);
-        result.setMessage("Success");
+        result.setResultCode(STATUS_OK);
+        result.setResultMessage("Success");
         return result;
     }
 
-    public static OperateCiJsonResponse okayWithData(Object data) {
+    public static OperateCiJsonResponse okayWithData(List<Object> data) {
         return okay().withData(data);
     }
 
     public static OperateCiJsonResponse error(String errorMessage) {
         OperateCiJsonResponse result = new OperateCiJsonResponse();
-        result.setStatus(STATUS_ERROR);
-        result.setMessage(errorMessage);
+        result.setResultCode(STATUS_ERROR);
+        result.setResultMessage(errorMessage);
         return result;
     }
 }
