@@ -1,0 +1,15 @@
+package com.webank.plugins.wecmdb.dto;
+
+import java.util.List;
+
+public class OperateCiDtoInputs {
+    private List<OperateCiDto> inputs;
+
+    public List<OperateCiDto> getInputs() {
+        return inputs;
+    }
+
+    public void setInputs(List<OperateCiDto> inputs) {
+        this.inputs = inputs;
+    }
+}

@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.webank.plugins.wecmdb.dto.JsonResponse;
 import com.webank.plugins.wecmdb.dto.OperateCiDto;
+import com.webank.plugins.wecmdb.dto.OperateCiDtoInputs;
 import com.webank.plugins.wecmdb.dto.OperateCiJsonResponse;
 import com.webank.plugins.wecmdb.exception.OperationCiException;
 import com.webank.plugins.wecmdb.support.cmdb.CmdbServiceV2Stub;
@@ -54,12 +55,13 @@ public class ApiController {
 
     @PostMapping("/data/confirm")
     @ResponseBody
-    public OperateCiJsonResponse confirmBatchCiData(@RequestBody List<OperateCiDto> operateCiDtos) {
+    public OperateCiJsonResponse confirmBatchCiData(@RequestBody OperateCiDtoInputs inputs) {
+        List<OperateCiDto> operateCiDtos = inputs.getInputs();
         OperateCiJsonResponse response = null;
         try {
             response = OperateCiJsonResponse.okayWithData(cmdbServiceV2Stub.confirmBatchCiData(operateCiDtos));
         } catch (Exception e) {
-            throw new OperationCiException(e.getMessage(),e);
+            throw new OperationCiException(e.getMessage(), e);
         }
 
         return response;
