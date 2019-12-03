@@ -2,7 +2,7 @@ package com.webank.plugins.wecmdb.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-public class OperateCiJsonResponse extends JsonResponse{
+public class OperateCiJsonResponse{
     public final static String STATUS_OK = "OK";
     public final static String STATUS_ERROR = "ERROR";
 
