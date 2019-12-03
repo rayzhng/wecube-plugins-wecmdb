@@ -267,7 +267,7 @@ public class CmdbServiceV2Stub {
                     convertedMap.put(convertedDataAttrName, value != null ? singleRefObject.get(GUID) : value);
                 } else if (convertedAttrName.equals(convertedDataAttrName) && (CmdbInputType.fromCode(attr.getInputType()) == CmdbInputType.MultRef)) {
                     List<Map> multRefObjects = (List) value;
-                    convertedMap.put(convertedDataAttrName, multRefObjects.stream().map(item -> item.get("GUID")).collect(Collectors.toList()));
+                    convertedMap.put(convertedDataAttrName, multRefObjects.stream().map(item -> item.get(GUID)).collect(Collectors.toList()));
                 } else {
                     convertedMap.put(convertedDataAttrName, value);
                 }
