@@ -23,6 +23,7 @@ import com.webank.plugins.wecmdb.support.cmdb.dto.CmdbInputType;
 import com.webank.plugins.wecmdb.support.cmdb.dto.CmdbOperateCiDto;
 import com.webank.plugins.wecmdb.support.cmdb.dto.CmdbResponse;
 import com.webank.plugins.wecmdb.support.cmdb.dto.CmdbResponse.DefaultCmdbResponse;
+import com.webank.plugins.wecmdb.support.cmdb.dto.CmdbResponse.ListDataResponse;
 import com.webank.plugins.wecmdb.support.cmdb.dto.CmdbResponses.CiDataQueryResultResponse;
 import com.webank.plugins.wecmdb.support.cmdb.dto.CmdbResponses.CiTypeAttrQueryResultResponse;
 import com.webank.plugins.wecmdb.support.cmdb.dto.CmdbResponses.CiTypeQueryResultResponse;
@@ -76,13 +77,13 @@ public class CmdbServiceV2Stub {
         return query(CITYYP_ATTR_QUERY, queryObject, CiTypeAttrQueryResultResponse.class);
     }
 
-    public Object confirmBatchCiData(List<OperateCiDto> operateCiDtos) {
+    public List<Object> confirmBatchCiData(List<OperateCiDto> operateCiDtos) {
         validate(operateCiDtos);
         List<CmdbOperateCiDto> cmdbOperateCiDtos = new ArrayList<>();
         operateCiDtos.forEach(operateCiDto -> {
             cmdbOperateCiDtos.add(new CmdbOperateCiDto(operateCiDto.getGuid(), extractCiTypeIdFromGuid(operateCiDto.getGuid())));
         });
-        return template.postForResponse(asCmdbUrl(CIDATA_STATE_OPERATE), cmdbOperateCiDtos, DefaultCmdbResponse.class);
+        return template.postForResponse(asCmdbUrl(CIDATA_STATE_OPERATE), cmdbOperateCiDtos, ListDataResponse.class);
     }
 
     private int extractCiTypeIdFromGuid(String guid) {

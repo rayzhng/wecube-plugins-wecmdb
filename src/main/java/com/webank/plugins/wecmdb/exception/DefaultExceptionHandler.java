@@ -17,7 +17,7 @@ public class DefaultExceptionHandler {
 
     @ResponseBody
     @ExceptionHandler(Exception.class)
-    public JsonResponse handleException(Exception exception) {
+    public Object handleException(Exception exception) {
         log.error(exception.getMessage(), exception);
         if (exception instanceof RemoteCallException) {
             RemoteCallException remoteCallException = (RemoteCallException) exception;
