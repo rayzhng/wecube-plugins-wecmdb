@@ -64,7 +64,7 @@
     <!-- 7.插件列表 - 描述插件包中单个插件的输入和输出 -->
     <plugins>
         <plugin id="ci-data-confirm" name="CI Data Confirmation">
-            <interface action="confirm" path="/data/confirm" httpMethod='POST'>
+            <interface action="confirm" path="/wecmdb/data/confirm" httpMethod='POST'>
                 <inputParameters>
                     <parameter datatype="string" mappingType='context' required='Y'>guid</parameter>
                 </inputParameters>
