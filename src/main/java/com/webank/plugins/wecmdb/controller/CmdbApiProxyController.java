@@ -41,7 +41,7 @@ public class CmdbApiProxyController {
     }
 
     @RequestMapping(value = API_PROXY_PATH + "/**", method = { POST, PUT, PATCH })
-    public void pluginApiProxy(HttpServletRequest request, HttpServletResponse response, @RequestBody Object body) {
+    public void pluginApiProxy(HttpServletRequest request, HttpServletResponse response, @RequestBody(required = false) Object body) {
         proxy(createProxyExchange(request, response).body(body), request);
     }
 
