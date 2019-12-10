@@ -81,7 +81,11 @@ public class CmdbServiceV2Stub {
         validate(operateCiDtos);
         List<CmdbOperateCiDto> cmdbOperateCiDtos = new ArrayList<>();
         operateCiDtos.forEach(operateCiDto -> {
-            cmdbOperateCiDtos.add(new CmdbOperateCiDto(operateCiDto.getGuid(), extractCiTypeIdFromGuid(operateCiDto.getGuid())));
+            List<String> guids = ConfirmParser.parseGuid(operateCiDto.getGuid());
+            guids.forEach(guid -> {
+                cmdbOperateCiDtos.add(new CmdbOperateCiDto(guid, extractCiTypeIdFromGuid(guid)));
+            });
+
         });
         return template.postForResponse(asCmdbUrl(CIDATA_STATE_OPERATE), cmdbOperateCiDtos, ListDataResponse.class);
     }
